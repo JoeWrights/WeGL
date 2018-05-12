@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>three.js 3D立方体</title>
+    <style>
+        #webglcanvas {
+            display: block;
+            margin: 50px auto;
+            border: none;
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="webglcanvas" width="500" height="500">
+
+    </canvas>
+    <script src="https://cdn.bootcss.com/three.js/92/three.min.js"></script>
+    <script src="https://cdn.bootcss.com/stats.js/r17/Stats.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        // 当前的js不是封装的，是当前页面的逻辑代码
+        // 一般在document ready之后再发生
+        // 让html、css先做，网页的形成要渲染一棵dom树
+        // document ready事件 $()
+        // 早于window.onload触发，这个叫生命周期
+        //全局变量 作用域 scope
+        var renderer, scene, camera, cube,light;
+        $(function () {
+            const canvas = document.getElementById("webglcanvas"); //放外面会污染全局空间
+            //函数内部的局部变量
+            // canvas 2D画布 3D渲染
+            // render 渲染器 3D世界很复杂
+            // 做一堆模型，然后渲染出来
+            // THREE 提供了3D的一些绘制API
+            renderer = new THREE.WebGLRenderer({
+                canvas: canvas,
+                antialias: true //抗锯齿，让画面更加高清
+            });
+            //设置渲染器大小
+            renderer.setSize(canvas.width, canvas.height);
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 1, 4000);
+            light=new THREE.DirectionalLight(0x122abc,1.5);
+            light.position.set(0,0,1);
+            scene.add(light);
+            //主角 3D Object
+            const mapUrl = "webgl-logo-256.jpg";
+            const map = new THREE.ImageUtils.loadTexture(mapUrl);
+            const material = new THREE.MeshBasicMaterial({
+                map: map
+            });
+            const geometry = new THREE.CubeGeometry(2, 2, 2);
+            cube = new THREE.Mesh(geometry, material);
+            cube.position.z = -8;
+            cube.rotation.x = Math.PI / 5;
+            cube.rotation.y = Math.PI / 5;
+            scene.add(cube);
+            run();
+        })
+
+        function run() {
+            requestAnimationFrame(function () {
+                run();
+            });
+            renderer.render(scene, camera);
+            animation();
+        }
+        var currentTime = 0;
+        var duration = 5000;
+
+        function animation() {
+            //一直调用
+            var now = Date.now();
+            var deltat = now - currentTime;
+            currentTime = now;
+            var fract = deltat / duration;
+            var angle = Math.PI * 2 * fract;
+            //慢慢动，时间有关,相应的旋转角度
+            cube.rotation.y += angle;
+            cube.rotation.x += angle;
+            // console.log(angle);
+        }
+        // window.onload=function(){
+        //     //有点晚了
+        // }
+    </script>
+</body>
+
+</html>
